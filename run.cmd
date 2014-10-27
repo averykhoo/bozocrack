@@ -1,0 +1,1 @@
+python break-md5.py -i hashes.txt -d words4.txt -o out.txt
