@@ -6,14 +6,16 @@ import re
 
 hash_pattern = re.compile('[0-9a-f]{32}|[0-9A-F]{32}')
 hash_cache = None
-target = 'hashes.txt'
+#target = 'hashes.txt'
+target = 'test-hashes.txt'
 
 
 def internet_on():
     import urllib2
 
     try:
-        response = urllib2.urlopen('http://74.125.228.100', timeout=1)
+        response = urllib2.urlopen('http://74.125.228.100', timeout=5)
+        # google less likely to be down than local connection
         return True
     except urllib2.URLError:
         return False
@@ -127,7 +129,7 @@ def break_hashes(file_, dict_=None, chars='abcdefghijklmnopqrstuvwxyz', len_=0, 
         tup = break_hash(h, dict_=dict_, chars=chars, len_=len_, search=search)
         yield ':'.join(tup) if tup else h + ': hash not found :('
 
-
+## testing stuff
 # read_eval_print_loop()
 # h = md5('CorrectHorseBatteryStaple')
 # print search_dict(h, google(h))
@@ -153,6 +155,7 @@ if __name__ == "__main__":
     f_dict = args.dictionary
     repl_on = args.r
 
+    # in -> out
     if f_out and f_in:
         with open(f_out, 'w') as f:
             for result in break_hashes(f_in, dict_=f_dict):
@@ -160,18 +163,26 @@ if __name__ == "__main__":
                 print >> f, result
         print 'saved to' + f_out
         optimize_cache()
+
+    # in -> stdout
     elif f_in:
         for result in break_hashes(f_in, dict_=f_dict):
             print result
         optimize_cache()
+
+    # default target -> stdout
     elif target and not repl_on:
         print 'no args, using target defined in .py file'
         for result in break_hashes(target, len_=5):
             print result
         optimize_cache()
+
+    # default target removed?
     else:
         print 'nothing to do'
         print parser.format_help()
+
+    # repl
     if repl_on:
         read_eval_print_loop()
     print 'done!'
